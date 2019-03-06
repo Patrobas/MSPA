@@ -14,7 +14,7 @@ h3 = 0.5;           % Upper cladding
 
 % Horizontal dimensions:
 rh = 1.1;           % Ridge height
-rw = 1.0;           % Ridge half-width
+
 side = 1.5;         % Space on side
 
 % Grid size:
@@ -22,45 +22,32 @@ dx = 0.0125;        % grid size (horizontal)
 dy = 0.0125;        % grid size (vertical)
 
 lambda = 1.55;      % vacuum wavelength
-nmodes = 10;         % number of modes to compute
+n = 0;
+neff_sum = zeros(10,1);
+for rw=linspace(0.325,1.0,10)
+    n = n + 1;
+    [x,y,xc,yc,nx,ny,eps,edges] = waveguidemesh([n1,n2,n3],[h1,h2,h3], ...
+                                                rh,rw,side,dx,dy); 
 
-[x,y,xc,yc,nx,ny,eps,edges] = waveguidemesh([n1,n2,n3],[h1,h2,h3], ...
-                                            rh,rw,side,dx,dy); 
-
-for i=1:nmodes
     % First consider the fundamental TE mode:
 
     [Hx,Hy,neff] = wgmodes(lambda,n2,nmodes,dx,dy,eps,'000A');
+    neff_sum(n) = neff;
+    fprintf(1,'neff = %.6f\n',neff);
 
-    fprintf(1,'neff = %.6f\n',neff(i));
-
-    figure(2*i-1);
+    figure(1);
     subplot(121);
-    contourmode(x,y,Hx(:,:,i));
+    contourmode(x,y,Hx(:,:));
     title('Hx (TE mode)'); xlabel('x'); ylabel('y'); 
     for v = edges, line(v{:}); end
 
     subplot(122);
-    contourmode(x,y,Hy(:,:,i));
+    contourmode(x,y,Hy(:,:));
     title('Hy (TE mode)'); xlabel('x'); ylabel('y'); 
     for v = edges, line(v{:}); end
-
-    % Next consider the fundamental TM mode
-    % (same calculation, but with opposite symmetry)
-
-    [Hx,Hy,neff] = wgmodes(lambda,n2,nmodes,dx,dy,eps,'000S');
-
-    fprintf(1,'neff = %.6f\n',neff(i));
-
-    figure(2*i);
-    subplot(121);
-    contourmode(x,y,Hx(:,:,i));
-    title('Hx (TM mode)'); xlabel('x'); ylabel('y'); 
-    for v = edges, line(v{:}); end
-
-    subplot(122);
-    contourmode(x,y,Hy(:,:,i));
-    title('Hy (TM mode)'); xlabel('x'); ylabel('y'); 
-    for v = edges, line(v{:}); end
-
 end
+
+figure(n+1);
+plot(linspace(0.325,1.0,10), neff_sum);
+xlabel('Half Ridge Width');
+ylabel('n_eff');
