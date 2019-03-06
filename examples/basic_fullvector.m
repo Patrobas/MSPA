@@ -27,37 +27,40 @@ nmodes = 1;         % number of modes to compute
 [x,y,xc,yc,nx,ny,eps,edges] = waveguidemesh([n1,n2,n3],[h1,h2,h3], ...
                                             rh,rw,side,dx,dy); 
 
-% First consider the fundamental TE mode:
+for i=1:nmodes
+    % First consider the fundamental TE mode:
 
-[Hx,Hy,neff] = wgmodes(lambda,n2,nmodes,dx,dy,eps,'000A');
+    [Hx,Hy,neff] = wgmodes(lambda,n2,nmodes,dx,dy,eps,'000A');
 
-fprintf(1,'neff = %.6f\n',neff);
+    fprintf(1,'neff = %.6f\n',neff(i));
 
-figure(1);
-subplot(121);
-contourmode(x,y,Hx);
-title('Hx (TE mode)'); xlabel('x'); ylabel('y'); 
-for v = edges, line(v{:}); end
+    figure(2*i-1);
+    subplot(121);
+    surfmode(x,y,Hx(:,:,i));
+    title('Hx (TE mode)'); xlabel('x'); ylabel('y'); 
+    %for v = edges, line(v{:}); end
 
-subplot(122);
-contourmode(x,y,Hy);
-title('Hy (TE mode)'); xlabel('x'); ylabel('y'); 
-for v = edges, line(v{:}); end
+    subplot(122);
+    surfmode(x,y,Hy(:,:,i));
+    title('Hy (TE mode)'); xlabel('x'); ylabel('y'); 
+    %for v = edges, line(v{:}); end
 
-% Next consider the fundamental TM mode
-% (same calculation, but with opposite symmetry)
+    % Next consider the fundamental TM mode
+    % (same calculation, but with opposite symmetry)
 
-[Hx,Hy,neff] = wgmodes(lambda,n2,nmodes,dx,dy,eps,'000S');
+    [Hx,Hy,neff] = wgmodes(lambda,n2,nmodes,dx,dy,eps,'000S');
 
-fprintf(1,'neff = %.6f\n',neff);
+    fprintf(1,'neff = %.6f\n',neff(i));
 
-figure(2);
-subplot(121);
-contourmode(x,y,Hx);
-title('Hx (TM mode)'); xlabel('x'); ylabel('y'); 
-for v = edges, line(v{:}); end
+    figure(2*i);
+    subplot(121);
+    surfmode(x,y,Hx(:,:,i));
+    title('Hx (TM mode)'); xlabel('x'); ylabel('y'); 
+    %for v = edges, line(v{:}); end
 
-subplot(122);
-contourmode(x,y,Hy);
-title('Hy (TM mode)'); xlabel('x'); ylabel('y'); 
-for v = edges, line(v{:}); end
+    subplot(122);
+    surfmode(x,y,Hy(:,:,i));
+    title('Hy (TM mode)'); xlabel('x'); ylabel('y'); 
+    %for v = edges, line(v{:}); end
+
+end
